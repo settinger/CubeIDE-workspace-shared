@@ -1,0 +1,6 @@
+C:/Users/Sam/STM32CubeIDE/workspace2/EEPROM_Emulation/Src/eeprom.c:304:10:EE_VerifyPageFullyErased	0	static
+C:/Users/Sam/STM32CubeIDE/workspace2/EEPROM_Emulation/Src/eeprom.c:549:17:EE_VerifyPageFullWriteVariable	16	static
+C:/Users/Sam/STM32CubeIDE/workspace2/EEPROM_Emulation/Src/eeprom.c:425:26:EE_Format	32	static
+C:/Users/Sam/STM32CubeIDE/workspace2/EEPROM_Emulation/Src/eeprom.c:342:10:EE_ReadVariable	8	static
+C:/Users/Sam/STM32CubeIDE/workspace2/EEPROM_Emulation/Src/eeprom.c:51:10:EE_Init	48	static
+C:/Users/Sam/STM32CubeIDE/workspace2/EEPROM_Emulation/Src/eeprom.c:401:10:EE_WriteVariable	56	static
