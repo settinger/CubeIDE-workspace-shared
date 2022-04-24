@@ -13,12 +13,12 @@
 
 //const uint64_t EEPROM_SET;
 typedef struct Settings {
-	int x0;
-	int y0;
-	int x1;
-	int y1;
+  int x0;
+  int y0;
+  int x1;
+  int y1;
 } Settings;
 
-int EEPROM_exists( void );
+int EEPROM_exists(void);
 
 #endif /* INC_SETTINGS_H_ */

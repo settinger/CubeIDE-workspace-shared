@@ -8,6 +8,6 @@
 #include "settings.h"
 #include "eeprom.h"
 
-int EEPROM_exists( void ) {
-	return 1;
+int EEPROM_exists(void) {
+  return 1;
 }
