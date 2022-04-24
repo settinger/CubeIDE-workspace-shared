@@ -19,4 +19,6 @@ typedef struct Settings {
 	int y1;
 } Settings;
 
+int EEPROM_exists( void );
+
 #endif /* INC_SETTINGS_H_ */

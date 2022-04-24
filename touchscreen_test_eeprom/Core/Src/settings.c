@@ -6,3 +6,8 @@
  */
 
 #include "settings.h"
+#include "eeprom.h"
+
+int EEPROM_exists( void ) {
+	return 1;
+}
