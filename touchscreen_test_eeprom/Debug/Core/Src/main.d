@@ -53,7 +53,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  c:\users\sam\stm32cubeide\workspace2\touchscreen_test_eeprom\drivers\bsp\components\stmpe811\stmpe811.h \
  c:\users\sam\stm32cubeide\workspace2\touchscreen_test_eeprom\drivers\bsp\components\common\ts.h \
  c:\users\sam\stm32cubeide\workspace2\touchscreen_test_eeprom\drivers\bsp\components\common\io.h \
- ../Core/Inc/eeprom.h
+ ../Core/Inc/eeprom.h ../Core/Inc/settings.h
 ../Core/Inc/main.h:
 C:/Users/Sam/STM32Cube/Repository/STM32Cube_FW_F4_V1.27.0/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -117,3 +117,4 @@ c:\users\sam\stm32cubeide\workspace2\touchscreen_test_eeprom\drivers\bsp\compone
 c:\users\sam\stm32cubeide\workspace2\touchscreen_test_eeprom\drivers\bsp\components\common\ts.h:
 c:\users\sam\stm32cubeide\workspace2\touchscreen_test_eeprom\drivers\bsp\components\common\io.h:
 ../Core/Inc/eeprom.h:
+../Core/Inc/settings.h:

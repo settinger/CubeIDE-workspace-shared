@@ -37,6 +37,7 @@
 #include "stm32f429i_discovery_lcd.h"
 #include "stm32f429i_discovery_ts.h"
 #include "eeprom.h"
+#include "settings.h"
 #include <stdlib.h>
 /* USER CODE END Includes */
 
@@ -352,27 +353,41 @@ int main(void)
   HAL_FLASH_Unlock();
   HAL_Delay(1000);
   /* EEPROM Init */
+  Serial_Message("EEPROM initializing...");
   if( EE_Init() != EE_OK)
   {
     Error_Handler();
   }
+  Serial_Message("EEPROM initialized");
 
-  uint16_t writeToEEPROM = 49;
+  uint16_t writeToEEPROM;
 
-  // Write something to EEPROM
-  if((EE_WriteVariable(VirtAddVarTab[0],  writeToEEPROM)) != HAL_OK)
-  {
-	Error_Handler();
-  }
+//  // Write something to EEPROM
+//  if((EE_WriteVariable(VirtAddVarTab[0],  writeToEEPROM)) != HAL_OK)
+//  {
+//	Error_Handler();
+//  }
   // Read that back
   if((EE_ReadVariable(VirtAddVarTab[0],  &VarDataTab[0])) != HAL_OK)
   {
     Error_Handler();
   } else {
 	  Serial_Message("EEPROM read:");
-	  Print_Int(VarDataTab[0]);
+	  writeToEEPROM = VarDataTab[0];
+	  Print_Int(writeToEEPROM);
+	  writeToEEPROM++;
   }
 
+  Settings barf;
+  barf.x0 = 4;
+  Print_Int(barf.x0);
+
+  // Write something to EEPROM
+  if((EE_WriteVariable(VirtAddVarTab[0],  writeToEEPROM)) != HAL_OK)
+  {
+	Error_Handler();
+  }
+  Serial_Message("EEPROM written");
   /* USER CODE END 2 */
 
   /* Infinite loop */
