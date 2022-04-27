@@ -5,19 +5,28 @@
  *      Author: Sam
  */
 
+#include "serial_logging.h"
 #include "stm32f429i_discovery.h"
 #include "stm32f429i_discovery_lcd.h"
 #include "stm32f429i_discovery_ts.h"
 #include "touchscreen.h"
 #include "stdio.h"
+#include "eeprom.h"
+#include "settings.h"
 
 extern TS_StateTypeDef TS_State;
 static uint8_t Calibration_Done = 0;
 static int16_t A1, A2, B1, B2;
 static int16_t aPhysX[2], aPhysY[2], aLogX[2], aLogY[2];
 
+/* EEPROM private variables */
+/* Virtual address defined by the user: 0xFFFF value is prohibited */
+uint16_t VirtAddVarTab[NB_OF_VAR] = { 0x5555, 0x6666, 0x7777, 0x8888 };
+uint16_t VarDataTab[NB_OF_VAR] = { 0, 0, 0, 0 };
+uint16_t VarValue, VarDataTmp = 0;
+
 /**
- * @brief  Performs the TS calibration
+ * @brief  Performs the TS calibration and tries saving results to EEPROM
  * @param  None
  * @retval None
  */
@@ -55,6 +64,56 @@ void Touchscreen_Calibration(void) {
       B2 = (1000 * aLogY[0]) - A2 * aPhysY[0];
 
       Calibration_Done = 1;
+
+      // Store values in EEPROM
+      Serial_Message("EEPROM initializing...");
+      HAL_FLASH_Unlock();
+      HAL_Delay(10);
+      if (EE_Init() != EE_OK) {
+        return; // Error handler?
+      }
+      Serial_Message("EEPROM initialized");
+
+      if ((EE_WriteVariable(EEPROM_LCD_A1_ADDRESS, A1)) != HAL_OK) {
+        Serial_Message("Error writing to EEPROM: A1");
+        return;
+      }
+      if ((EE_WriteVariable(EEPROM_LCD_A2_ADDRESS, A2)) != HAL_OK) {
+        Serial_Message("Error writing to EEPROM: A2");
+        return;
+      }
+      if ((EE_WriteVariable(EEPROM_LCD_B1_ADDRESS, B1)) != HAL_OK) {
+        Serial_Message("Error writing to EEPROM: B1");
+        return;
+      }
+      if ((EE_WriteVariable(EEPROM_LCD_B2_ADDRESS, B2)) != HAL_OK) {
+        Serial_Message("Error writing to EEPROM: B2");
+        return;
+      }
+
+      if ((EE_WriteVariable(EEPROM_CHECK_0_ADDRESS, EEPROM_CHECK_0))
+          != HAL_OK) {
+        Serial_Message("Error writing to EEPROM: Check 0");
+        return;
+      }
+      if ((EE_WriteVariable(EEPROM_CHECK_1_ADDRESS, EEPROM_CHECK_1))
+          != HAL_OK) {
+        Serial_Message("Error writing to EEPROM: Check 1");
+        return;
+      }
+      if ((EE_WriteVariable(EEPROM_CHECK_2_ADDRESS, EEPROM_CHECK_2))
+          != HAL_OK) {
+        Serial_Message("Error writing to EEPROM: Check 2");
+        return;
+      }
+      if ((EE_WriteVariable(EEPROM_CHECK_3_ADDRESS, EEPROM_CHECK_3))
+          != HAL_OK) {
+        Serial_Message("Error writing to EEPROM: Check 3");
+        return;
+      }
+      HAL_FLASH_Lock();
+      Serial_Message("EEPROM written");
+
       return;
     }
 
@@ -169,38 +228,56 @@ uint8_t IsCalibrationDone(void) {
 // Check for A1, A2, B1, B2 values stored in EEPROM
 // If those exist, use those while initializing touchscreen
 // If they don't, enter the calibration screen
-void TS_Get_Params(void) {
-  /* Unlock the Flash Program Erase controller */
-  HAL_FLASH_Unlock();
-  HAL_Delay(1000);
-  /* EEPROM Init */
+// TODO: set it so calibration occurs if EEPROM fails, instead of going to Error_Handler()
+int TS_Get_Params(void) {
   Serial_Message("EEPROM initializing...");
+  HAL_FLASH_Unlock();
+  HAL_Delay(10);
   if (EE_Init() != EE_OK) {
-    Error_Handler();
+    return 2; // MAGIC NUMBER
   }
   Serial_Message("EEPROM initialized");
 
-  uint16_t writeToEEPROM;
+  uint16_t readInt;
 
-  //  // Write something to EEPROM
-  //  if((EE_WriteVariable(VirtAddVarTab[0],  writeToEEPROM)) != HAL_OK)
-  //  {
-  //	Error_Handler();
-  //  }
-  // Read that back
-  if ((EE_ReadVariable(VirtAddVarTab[0], &VarDataTab[0])) != HAL_OK) {
-    Error_Handler();
-  } else {
-    Serial_Message("EEPROM read:");
-    writeToEEPROM = VarDataTab[0];
-    Print_Int(writeToEEPROM);
-    writeToEEPROM++;
+  // Check the EE_Check values
+  //   If those match expected, load A1 A2 B1 B2 from memory
+  if ((EE_ReadVariable(EEPROM_CHECK_0_ADDRESS, &readInt)) != HAL_OK) {
+    Serial_Message("Problem loading settings!");
+    return 2; // MAGIC NUMBER
+  }
+  if (readInt != EEPROM_CHECK_0) {
+    Serial_Message("No EEPROM data found.");
+    return 1; // MAGIC NUMBER
   }
 
-  // Write something to EEPROM
-  if ((EE_WriteVariable(VirtAddVarTab[0], writeToEEPROM)) != HAL_OK) {
-    Error_Handler();
+  if ((EE_ReadVariable(EEPROM_LCD_A1_ADDRESS, &readInt)) != HAL_OK) {
+    Serial_Message("Problem loading A1!");
+    return 2; // MAGIC NUMBER
   }
+  A1 = (int16_t) readInt;
+
+  if ((EE_ReadVariable(EEPROM_LCD_A2_ADDRESS, &readInt)) != HAL_OK) {
+    Serial_Message("Problem loading A2!");
+    return 2; // MAGIC NUMBER
+  }
+  A2 = (int16_t) readInt;
+
+  if ((EE_ReadVariable(EEPROM_LCD_B1_ADDRESS, &readInt)) != HAL_OK) {
+    Serial_Message("Problem loading B1!");
+    return 2; // MAGIC NUMBER
+  }
+  B1 = (int16_t) readInt;
+
+  if ((EE_ReadVariable(EEPROM_LCD_A1_ADDRESS, &readInt)) != HAL_OK) {
+    Serial_Message("Problem loading B2!");
+    return 2; // MAGIC NUMBER
+  }
+  B2 = (int16_t) readInt;
+
+  Serial_Message("LCD configuration loaded.");
+
   HAL_FLASH_Lock();
   Serial_Message("EEPROM written");
+  return 0; // MAGIC NUMBER
 }

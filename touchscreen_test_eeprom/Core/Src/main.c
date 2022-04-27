@@ -65,11 +65,6 @@
 uint32_t button0_debounce_time_old = 0;
 TS_StateTypeDef TS_State;
 
-/* EEPROM private variables */
-/* Virtual address defined by the user: 0xFFFF value is prohibited */
-uint16_t VirtAddVarTab[NB_OF_VAR] = { 0x5555, 0x6666, 0x7777, 0x8888 };
-uint16_t VarDataTab[NB_OF_VAR] = { 0, 0, 0, 0 };
-uint16_t VarValue, VarDataTmp = 0;
 
 /* USER CODE END PV */
 
@@ -141,7 +136,12 @@ int main(void) {
   // Touchscreen initialization
   // If no values for A1, A2, B1, B2 are stored in EEPROM, run the calibration
   // Else, go right into init things
-  //Touchscreen_Calibration();
+  // TODO: replace magic numbers in TS_Get_Params
+  if (TS_Get_Params() != 0) {
+    Touchscreen_Calibration();
+    HAL_FLASH_Lock();
+    //Error_Handler();
+  }
   BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
   Serial_Message("LCD X dimension: ");
   Print_Int(BSP_LCD_GetXSize());

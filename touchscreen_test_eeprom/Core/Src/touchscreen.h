@@ -22,6 +22,6 @@ uint16_t Calibration_GetX(uint16_t x);
 uint16_t Calibration_GetY(uint16_t y);
 uint8_t IsCalibrationDone(void);
 
-void TS_Get_Params(void);
+int TS_Get_Params(void);
 
 #endif /* SRC_TOUCHSCREEN_H_ */
