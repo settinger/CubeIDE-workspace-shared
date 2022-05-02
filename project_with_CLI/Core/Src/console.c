@@ -7,7 +7,7 @@
  *      Author: Sam
  */
 
-#include <console_io.h>  // TODO
+#include <console_io.h>
 #include <string.h>  // for NULL
 #include <stdlib.h>  // for atoi and itoa (though this code implement a version of that)
 #include <stdbool.h>
@@ -67,7 +67,7 @@ static uint32_t ConsoleCommandMatch(const char *name, const char *buffer) {
 
 /* ConsoleResetBuffer
  * In an ideal world, this would just zero out the buffer.
- * However, thre are times when the buffer may have data
+ * However, there are times when the buffer may have data
  * beyond what was used in the last command. We don't want
  * to lose that data so we move it to the start of the
  * command buffer and then zero the rest.
@@ -145,6 +145,8 @@ void ConsoleProcess(void) {
     receivedSoFar += received;
     commandEndline = ConsoleCommandEndline(receiveBuffer, receivedSoFar);
     if (commandEndline >= 0) { // Received a complete string with a command
+      ConsoleIoSend(ENDLINE);
+      // Check if the received message is a valid instruction
       commandTable = ConsoleCommandsGetTable();
       commandIndex = 0u;
       found = NOT_FOUND;
@@ -273,6 +275,7 @@ commandResult ConsoleReceiveHex_uint16(const char *buffer,
     }
     *parameterUint16 = value;
   }
+  return result;
 }
 
 /* ConsoleSendHex_uint16

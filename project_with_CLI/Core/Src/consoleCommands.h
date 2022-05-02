@@ -38,6 +38,6 @@ typedef struct consoleCommandStruct {
 
 #define CONSOLE_COMMAND_TABLE_END {NULL, NULL, HELP("")}
 
-const consoleCommandTable * consoleCommandsGetTable(void);
+const consoleCommandTable * ConsoleCommandsGetTable(void);
 
 #endif /* SRC_CONSOLECOMMANDS_H_ */

@@ -14,34 +14,29 @@
 #include "usart.h"
 
 consoleError ConsoleIoInit(void) {
-  // UART5 is initialized elsewhere by STM32CUBEIDE-generated code
+  // UART5 is initialized elsewhere by STM32CUBEIDE-generated code so this is not necessary
   return CONSOLE_SUCCESS;
 }
 
-// TODO: implement this; what to do about transmission errors or backspaces?
-consoleError ConsoleIoReceive(uint8_t * buffer, const uint32_t bufferLength, uint32_t * readLength) {
+// What to do about transmission errors or backspaces?
+consoleError ConsoleIoReceive(uint8_t *buffer, const uint32_t bufferLength,
+    uint32_t *readLength) {
   uint32_t i = 0;
-  char ch;
+  uint8_t ch;
 
-  //HAL_UART_Receive_IT();
-  /*
-  while (uart_is_readable(uart0))
-  {
-    ch = uart_getc(uart0);
-    uart_putc(uart0, ch); // echo
-    buffer[i] = (uint8_t) ch;
+  while (huart5.RxState == HAL_UART_STATE_READY && '\r' != ch && '\n' != ch) {
+    HAL_UART_Receive(&huart5, (uint8_t*) &ch, 1, HAL_MAX_DELAY); // Next time, try HAL_UART_Receive_IT for non-blocking (interrupt) receiving
+    HAL_UART_Transmit(&huart5, (uint8_t*) &ch, 1, HAL_MAX_DELAY); // Display the received character in the console
+    buffer[i] = ch;
     i++;
   }
 
   *readLength = i;
-  return CONSOLE_SUCCESS;
-  */
 
-  //HAL_UART_Transmit(&huart5, (uint8_t*) string, strlen((char*) string), 100);
-  return CONSOLE_ERROR;
+  return CONSOLE_SUCCESS;
 }
 
-consoleError ConsoleIoSend(const char * buffer) {
-  HAL_UART_Transmit(&huart5, (uint8_t*)buffer, strlen(buffer), 100);
+consoleError ConsoleIoSend(const char *buffer) {
+  HAL_UART_Transmit(&huart5, (uint8_t*) buffer, strlen(buffer), 100);
   return CONSOLE_SUCCESS;
 }

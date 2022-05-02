@@ -60,6 +60,7 @@ static commandResult ConsoleCommandHelp(const char buffer[]) {
     ConsoleIoSend(" : ");
     ConsoleIoSend(myConsoleCommandTable[i].help);
 #endif
+    ConsoleIoSend(ENDLINE);
   }
   return result;
 }
